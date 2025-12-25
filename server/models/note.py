@@ -15,6 +15,6 @@ class Note(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
