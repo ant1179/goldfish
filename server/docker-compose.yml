@@ -1,8 +1,8 @@
 services:
   server:
     build:
-      context: ..
-      dockerfile: server/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     container_name: goldfish-server
     env_file:
       - .env
@@ -11,7 +11,7 @@ services:
     ports:
       - "${SERVER_EXTERNAL_PORT}:${SERVER_INTERNAL_PORT}"
     volumes:
-      - .:/app/server
+      - .:/app
     depends_on:
       postgres:
         condition: service_healthy

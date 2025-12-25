@@ -1,8 +1,8 @@
 """Script to initialize the database tables."""
 
 import asyncio
-from server.database import engine, Base
-from server.models.note import Note
+from database import engine, Base
+from models.note import Note
 
 
 async def init_db():

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from uuid import uuid4
 from sqlalchemy import Column, String, Text, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from server.database import Base
+from database import Base
 
 
 class Note(Base):

@@ -4,9 +4,9 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from server.database import get_db
-from server.models.note import Note
-from server.schemas.note import NoteCreate, NoteResponse
+from database import get_db
+from models.note import Note
+from schemas.note import NoteCreate, NoteResponse
 
 
 router = APIRouter(prefix="/api/notes", tags=["notes"])
