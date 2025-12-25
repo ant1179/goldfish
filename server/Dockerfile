@@ -13,8 +13,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certifi
 # Set the working directory
 WORKDIR /app
 
+# Create a non root user
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd --gid "${GID}" appuser \
+    && useradd --home /home/appuser --uid "${UID}" --gid "${GID}" appuser \
+    && chown appuser:appuser -R /app
+
 # Installer uv
-COPY --from=ghcr.io/astral-sh/uv:0.9.18 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Install project dependencies
 COPY requirements.txt .
@@ -22,6 +30,9 @@ RUN uv pip install --system -r requirements.txt
 
 # Copy project files
 COPY . .
+
+# Set the user to run the application
+USER appuser
 
 # Command to start the application
 CMD uvicorn main:app --host 0.0.0.0 --port ${SERVER_INTERNAL_PORT} --reload
