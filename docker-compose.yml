@@ -1,0 +1,4 @@
+include:
+  - database/docker-compose.yml
+  - server/docker-compose.yml
+
