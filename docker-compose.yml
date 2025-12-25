@@ -1,6 +1,7 @@
 include:
   - database/docker-compose.yml
   - server/docker-compose.yml
+  - client/docker-compose.yml
 
 networks:
   default:

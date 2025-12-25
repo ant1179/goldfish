@@ -1,0 +1,15 @@
+services:
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: goldfish-client
+    env_file:
+      - .env
+    ports:
+      - "${CLIENT_EXTERNAL_PORT}:${CLIENT_INTERNAL_PORT}"
+    depends_on:
+      - server
+    networks:
+      - default
+
