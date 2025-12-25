@@ -13,6 +13,7 @@ class DatabaseSettings(BaseSettings):
     model_config = {
         "env_file": ".env",
         "env_prefix": "DB_",
+        "extra": "ignore",
     }
 
 
