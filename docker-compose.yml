@@ -2,3 +2,7 @@ include:
   - database/docker-compose.yml
   - server/docker-compose.yml
 
+networks:
+  default:
+    name: goldfish-network
+
