@@ -21,7 +21,8 @@
     "@tiptap/react": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
     "@tiptap/extension-placeholder": "^2.1.13",
-    "@tiptap/extension-link": "^2.1.13"
+    "@tiptap/extension-link": "^2.1.13",
+    "sonner": "^1.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

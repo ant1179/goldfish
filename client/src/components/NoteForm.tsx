@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,7 +34,9 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
           setTitle(note.title)
           setContent(note.content)
         } catch (err) {
-          setError('Erreur lors du chargement de la note. Veuillez réessayer.')
+          const errorMessage = 'Erreur lors du chargement de la note. Veuillez réessayer.'
+          setError(errorMessage)
+          toast.error(errorMessage)
           console.error('Error loading note:', err)
         } finally {
           setIsLoading(false)
@@ -65,12 +68,14 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
           content: content,
         }
         await notesApi.updateNote(id, noteData)
+        toast.success('Note mise à jour avec succès')
       } else {
         const noteData: NoteCreate = {
           title: title.trim(),
           content: content,
         }
         await notesApi.createNote(noteData)
+        toast.success('Note créée avec succès')
         // Reset form only on creation
         setTitle('')
         setContent('')
@@ -84,6 +89,7 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
         ? 'Erreur lors de la mise à jour de la note. Veuillez réessayer.'
         : 'Erreur lors de la création de la note. Veuillez réessayer.'
       setError(errorMessage)
+      toast.error(errorMessage)
       console.error('Error saving note:', err)
     } finally {
       setIsSubmitting(false)

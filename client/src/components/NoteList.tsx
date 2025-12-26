@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
@@ -27,7 +28,9 @@ export function NoteList({ refreshKey }: NoteListProps) {
       const data = await notesApi.listNotes()
       setNotes(data)
     } catch (err) {
-      setError('Erreur lors du chargement des notes. Veuillez réessayer.')
+      const errorMessage = 'Erreur lors du chargement des notes. Veuillez réessayer.'
+      setError(errorMessage)
+      toast.error(errorMessage)
       console.error('Error fetching notes:', err)
     } finally {
       setIsLoading(false)
@@ -65,11 +68,14 @@ export function NoteList({ refreshKey }: NoteListProps) {
 
     try {
       await notesApi.deleteNote(noteToDelete.id)
+      toast.success('Note supprimée avec succès')
       await fetchNotes()
       setNoteToDelete(null)
       setDeleteDialogOpen(false)
     } catch (err) {
-      setError('Erreur lors de la suppression de la note. Veuillez réessayer.')
+      const errorMessage = 'Erreur lors de la suppression de la note. Veuillez réessayer.'
+      setError(errorMessage)
+      toast.error(errorMessage)
       console.error('Error deleting note:', err)
       setDeleteDialogOpen(false)
     }

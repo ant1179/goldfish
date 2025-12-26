@@ -5,6 +5,7 @@ import { NoteView } from './components/NoteView'
 import { useState } from 'react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Toaster } from '@/components/ui/sonner'
 import logo from '@/assets/images/goldfish.png'
 
 function App() {
@@ -70,6 +71,7 @@ function App() {
             />
           </Routes>
         </div>
+        <Toaster />
       </div>
     </Router>
   )

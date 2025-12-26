@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AlertDialog } from '@/components/ui/alert-dialog'
@@ -29,7 +30,9 @@ export function NoteView() {
         const loadedNote = await notesApi.getNote(id)
         setNote(loadedNote)
       } catch (err) {
-        setError('Erreur lors du chargement de la note. Veuillez réessayer.')
+        const errorMessage = 'Erreur lors du chargement de la note. Veuillez réessayer.'
+        setError(errorMessage)
+        toast.error(errorMessage)
         console.error('Error loading note:', err)
       } finally {
         setIsLoading(false)
@@ -59,9 +62,12 @@ export function NoteView() {
 
     try {
       await notesApi.deleteNote(id)
+      toast.success('Note supprimée avec succès')
       navigate('/notes')
     } catch (err) {
-      setError('Erreur lors de la suppression de la note. Veuillez réessayer.')
+      const errorMessage = 'Erreur lors de la suppression de la note. Veuillez réessayer.'
+      setError(errorMessage)
+      toast.error(errorMessage)
       console.error('Error deleting note:', err)
       setDeleteDialogOpen(false)
     }
