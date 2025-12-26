@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +12,7 @@ interface NoteFormProps {
 }
 
 export function NoteForm({ onNoteCreated }: NoteFormProps) {
+  const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -39,6 +41,8 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
       setTitle('')
       setContent('')
       onNoteCreated()
+      // Navigate to notes list after creation
+      navigate('/notes')
     } catch (err) {
       setError('Erreur lors de la création de la note. Veuillez réessayer.')
       console.error('Error creating note:', err)
