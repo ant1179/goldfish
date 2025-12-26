@@ -5,7 +5,7 @@ import { Collapsible } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
 import { AlertDialog } from '@/components/ui/alert-dialog'
 import { notesApi, type Note } from '@/services/api'
-import { FileText, Calendar, Edit, Pencil, Trash2 } from 'lucide-react'
+import { FileText, Calendar, Edit, Pencil, Trash2, Eye } from 'lucide-react'
 
 interface NoteListProps {
   refreshKey?: number
@@ -230,6 +230,18 @@ export function NoteList({ refreshKey }: NoteListProps) {
                           )}
                         </div>
                         <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigate(`/notes/${note.id}/view`)
+                            }}
+                            title="Voir la note"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"

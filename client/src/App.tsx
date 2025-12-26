@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom'
 import { NoteForm } from './components/NoteForm'
 import { NoteList } from './components/NoteList'
+import { NoteView } from './components/NoteView'
 import { useState } from 'react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -54,6 +55,10 @@ function App() {
             <Route
               path="/notes/new"
               element={<NoteForm onNoteCreated={handleNoteCreated} />}
+            />
+            <Route
+              path="/notes/:id/view"
+              element={<NoteView />}
             />
             <Route
               path="/notes/:id/edit"
