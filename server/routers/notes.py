@@ -5,7 +5,7 @@ from uuid import UUID
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from database import get_db
 from models.note import Note
 from schemas.note import NoteCreate, NoteUpdate, NoteResponse
@@ -81,4 +81,23 @@ async def update_note(
     await db.refresh(note)
     
     return NoteResponse.model_validate(note)
+
+
+@router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_note(
+    note_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    """Delete a note by ID."""
+    result = await db.execute(select(Note).where(Note.id == note_id))
+    note = result.scalar_one_or_none()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found"
+        )
+    
+    await db.execute(delete(Note).where(Note.id == note_id))
+    await db.commit()
 

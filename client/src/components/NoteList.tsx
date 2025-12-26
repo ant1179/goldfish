@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
+import { AlertDialog } from '@/components/ui/alert-dialog'
 import { notesApi, type Note } from '@/services/api'
-import { FileText, Calendar, Edit, Pencil } from 'lucide-react'
+import { FileText, Calendar, Edit, Pencil, Trash2 } from 'lucide-react'
 
 interface NoteListProps {
   refreshKey?: number
@@ -15,6 +16,8 @@ export function NoteList({ refreshKey }: NoteListProps) {
   const [notes, setNotes] = useState<Note[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [noteToDelete, setNoteToDelete] = useState<{ id: string; title: string } | null>(null)
 
   const fetchNotes = async () => {
     setIsLoading(true)
@@ -50,6 +53,26 @@ export function NoteList({ refreshKey }: NoteListProps) {
       hour: '2-digit',
       minute: '2-digit',
     }).format(date)
+  }
+
+  const handleDeleteClick = (noteId: string, noteTitle: string) => {
+    setNoteToDelete({ id: noteId, title: noteTitle })
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!noteToDelete) return
+
+    try {
+      await notesApi.deleteNote(noteToDelete.id)
+      await fetchNotes()
+      setNoteToDelete(null)
+      setDeleteDialogOpen(false)
+    } catch (err) {
+      setError('Erreur lors de la suppression de la note. Veuillez réessayer.')
+      console.error('Error deleting note:', err)
+      setDeleteDialogOpen(false)
+    }
   }
 
   if (isLoading) {
@@ -146,9 +169,24 @@ export function NoteList({ refreshKey }: NoteListProps) {
   const groupLabels = ['Aujourd\'hui', 'Cette semaine', 'La semaine dernière', 'Le mois dernier', 'Plus ancien']
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">Mes notes</h2>
+    <>
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title="Supprimer la note"
+        description={
+          noteToDelete
+            ? `Êtes-vous sûr de vouloir supprimer la note "${truncateTitle(noteToDelete.title)}" ? Cette action est irréversible.`
+            : ''
+        }
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        onConfirm={handleDeleteConfirm}
+        variant="destructive"
+      />
       <div className="space-y-4">
+        <h2 className="text-2xl font-semibold">Mes notes</h2>
+        <div className="space-y-4">
         {groupLabels.map((label) => {
           const groupNotes = groupedNotes[label]
           if (groupNotes.length === 0) return null
@@ -191,18 +229,32 @@ export function NoteList({ refreshKey }: NoteListProps) {
                             </div>
                           )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            navigate(`/notes/${note.id}/edit`)
-                          }}
-                          title="Modifier la note"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigate(`/notes/${note.id}/edit`)
+                            }}
+                            title="Modifier la note"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteClick(note.id, note.title)
+                            }}
+                            title="Supprimer la note"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -212,7 +264,8 @@ export function NoteList({ refreshKey }: NoteListProps) {
           )
         })}
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 

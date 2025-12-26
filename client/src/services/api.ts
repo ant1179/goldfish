@@ -47,5 +47,9 @@ export const notesApi = {
     const response = await apiClient.put<Note>(`/api/notes/${noteId}`, note)
     return response.data
   },
+
+  async deleteNote(noteId: string): Promise<void> {
+    await apiClient.delete(`/api/notes/${noteId}`)
+  },
 }
 
