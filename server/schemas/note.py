@@ -12,6 +12,13 @@ class NoteCreate(BaseModel):
     content: str = Field(..., min_length=1, description="Note content")
 
 
+class NoteUpdate(BaseModel):
+    """Schema for note update."""
+    
+    title: str = Field(..., min_length=1, max_length=255, description="Note title")
+    content: str = Field(..., min_length=1, description="Note content")
+
+
 class NoteResponse(BaseModel):
     """Schema for note response."""
     

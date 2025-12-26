@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible } from '@/components/ui/collapsible'
+import { Button } from '@/components/ui/button'
 import { notesApi, type Note } from '@/services/api'
-import { FileText, Calendar, Edit } from 'lucide-react'
+import { FileText, Calendar, Edit, Pencil } from 'lucide-react'
 
 interface NoteListProps {
   refreshKey?: number
 }
 
 export function NoteList({ refreshKey }: NoteListProps) {
+  const navigate = useNavigate()
   const [notes, setNotes] = useState<Note[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -158,7 +161,7 @@ export function NoteList({ refreshKey }: NoteListProps) {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {groupNotes.map((note) => (
-                  <Card key={note.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                  <Card key={note.id} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3 mb-3">
                         <div className="flex-shrink-0 mt-1">
@@ -175,17 +178,31 @@ export function NoteList({ refreshKey }: NoteListProps) {
                         {truncateContent(note.content)}
                       </p>
                       
-                      <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          <span>{formatDate(note.created_at)}</span>
-                        </div>
-                        {note.updated_at !== note.created_at && (
+                      <div className="flex items-center justify-between pt-2 border-t">
+                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
                           <div className="flex items-center gap-1">
-                            <Edit className="h-3 w-3" />
-                            <span>{formatTime(note.updated_at)}</span>
+                            <Calendar className="h-3 w-3" />
+                            <span>{formatDate(note.created_at)}</span>
                           </div>
-                        )}
+                          {note.updated_at !== note.created_at && (
+                            <div className="flex items-center gap-1">
+                              <Edit className="h-3 w-3" />
+                              <span>{formatTime(note.updated_at)}</span>
+                            </div>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate(`/notes/${note.id}/edit`)
+                          }}
+                          title="Modifier la note"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>

@@ -48,6 +48,10 @@ function App() {
               element={<NoteForm onNoteCreated={handleNoteCreated} />}
             />
             <Route
+              path="/notes/:id/edit"
+              element={<NoteForm onNoteCreated={handleNoteCreated} />}
+            />
+            <Route
               path="/notes"
               element={<NoteList refreshKey={refreshKey} />}
             />

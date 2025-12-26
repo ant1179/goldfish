@@ -22,6 +22,11 @@ export interface NoteCreate {
   content: string
 }
 
+export interface NoteUpdate {
+  title: string
+  content: string
+}
+
 export const notesApi = {
   async createNote(note: NoteCreate): Promise<Note> {
     const response = await apiClient.post<Note>('/api/notes', note)
@@ -30,6 +35,16 @@ export const notesApi = {
 
   async listNotes(): Promise<Note[]> {
     const response = await apiClient.get<Note[]>('/api/notes')
+    return response.data
+  },
+
+  async getNote(noteId: string): Promise<Note> {
+    const response = await apiClient.get<Note>(`/api/notes/${noteId}`)
+    return response.data
+  },
+
+  async updateNote(noteId: string, note: NoteUpdate): Promise<Note> {
+    const response = await apiClient.put<Note>(`/api/notes/${noteId}`, note)
     return response.data
   },
 }

@@ -1,12 +1,14 @@
 """Routes API for note management."""
 
 from typing import List
-from fastapi import APIRouter, Depends, status
+from uuid import UUID
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from database import get_db
 from models.note import Note
-from schemas.note import NoteCreate, NoteResponse
+from schemas.note import NoteCreate, NoteUpdate, NoteResponse
 
 
 router = APIRouter(prefix="/api/notes", tags=["notes"])
@@ -36,4 +38,47 @@ async def list_notes(
     result = await db.execute(select(Note).order_by(Note.created_at.desc()))
     notes = result.scalars().all()
     return [NoteResponse.model_validate(note) for note in notes]
+
+
+@router.get("/{note_id}", response_model=NoteResponse)
+async def get_note(
+    note_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> NoteResponse:
+    """Get a note by ID."""
+    result = await db.execute(select(Note).where(Note.id == note_id))
+    note = result.scalar_one_or_none()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found"
+        )
+    
+    return NoteResponse.model_validate(note)
+
+
+@router.put("/{note_id}", response_model=NoteResponse)
+async def update_note(
+    note_id: UUID,
+    note_data: NoteUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> NoteResponse:
+    """Update a note by ID."""
+    result = await db.execute(select(Note).where(Note.id == note_id))
+    note = result.scalar_one_or_none()
+    
+    if not note:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Note not found"
+        )
+    
+    note.title = note_data.title
+    note.content = note_data.content
+    note.updated_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(note)
+    
+    return NoteResponse.model_validate(note)
 
