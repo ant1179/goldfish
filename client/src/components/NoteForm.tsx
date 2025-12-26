@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { RichTextEditor } from '@/components/RichTextEditor'
 import { notesApi, type NoteCreate, type NoteUpdate } from '@/services/api'
 
 interface NoteFormProps {
@@ -47,7 +47,10 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (!title.trim() || !content.trim()) {
+    // Strip HTML tags to check if content is empty (only whitespace/HTML tags)
+    const textContent = content.replace(/<[^>]*>/g, '').trim()
+    
+    if (!title.trim() || !textContent) {
       setError('Le titre et le contenu sont requis')
       return
     }
@@ -59,13 +62,13 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
       if (isEditMode && id) {
         const noteData: NoteUpdate = {
           title: title.trim(),
-          content: content.trim(),
+          content: content,
         }
         await notesApi.updateNote(id, noteData)
       } else {
         const noteData: NoteCreate = {
           title: title.trim(),
-          content: content.trim(),
+          content: content,
         }
         await notesApi.createNote(noteData)
         // Reset form only on creation
@@ -123,12 +126,10 @@ export function NoteForm({ onNoteCreated }: NoteFormProps) {
           
           <div className="space-y-2">
             <Label htmlFor="content">Contenu</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setContent(e.target.value)}
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
               placeholder="Entrez le contenu de la note"
-              rows={6}
               disabled={isSubmitting}
             />
           </div>

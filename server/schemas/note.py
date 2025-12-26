@@ -9,14 +9,14 @@ class NoteCreate(BaseModel):
     """Schema for note creation."""
     
     title: str = Field(..., min_length=1, max_length=255, description="Note title")
-    content: str = Field(..., min_length=1, description="Note content")
+    content: str = Field(..., min_length=1, description="Note content in HTML format")
 
 
 class NoteUpdate(BaseModel):
     """Schema for note update."""
     
     title: str = Field(..., min_length=1, max_length=255, description="Note title")
-    content: str = Field(..., min_length=1, description="Note content")
+    content: str = Field(..., min_length=1, description="Note content in HTML format")
 
 
 class NoteResponse(BaseModel):
@@ -24,7 +24,7 @@ class NoteResponse(BaseModel):
     
     id: UUID
     title: str
-    content: str
+    content: str  # HTML content
     created_at: datetime
     updated_at: datetime
     

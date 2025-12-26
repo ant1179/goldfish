@@ -17,7 +17,11 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "tailwind-merge": "^2.5.2",
-    "lucide-react": "^0.445.0"
+    "lucide-react": "^0.445.0",
+    "@tiptap/react": "^2.1.13",
+    "@tiptap/starter-kit": "^2.1.13",
+    "@tiptap/extension-placeholder": "^2.1.13",
+    "@tiptap/extension-link": "^2.1.13"
   },
   "devDependencies": {
     "@types/react": "^18.3.5",

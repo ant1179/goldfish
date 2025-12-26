@@ -9,6 +9,7 @@ from sqlalchemy import select, delete
 from database import get_db
 from models.note import Note
 from schemas.note import NoteCreate, NoteUpdate, NoteResponse
+from utils import sanitize_html
 
 
 router = APIRouter(prefix="/api/notes", tags=["notes"])
@@ -19,10 +20,13 @@ async def create_note(
     note_data: NoteCreate,
     db: AsyncSession = Depends(get_db),
 ) -> NoteResponse:
-    """Create a new note."""
+    """Create a new note with HTML content."""
+    # Sanitize HTML content before storing
+    sanitized_content = sanitize_html(note_data.content)
+    
     note = Note(
         title=note_data.title,
-        content=note_data.content,
+        content=sanitized_content,
     )
     db.add(note)
     await db.commit()
@@ -64,7 +68,7 @@ async def update_note(
     note_data: NoteUpdate,
     db: AsyncSession = Depends(get_db),
 ) -> NoteResponse:
-    """Update a note by ID."""
+    """Update a note by ID with HTML content."""
     result = await db.execute(select(Note).where(Note.id == note_id))
     note = result.scalar_one_or_none()
     
@@ -74,8 +78,11 @@ async def update_note(
             detail="Note not found"
         )
     
+    # Sanitize HTML content before storing
+    sanitized_content = sanitize_html(note_data.content)
+    
     note.title = note_data.title
-    note.content = note_data.content
+    note.content = sanitized_content
     note.updated_at = datetime.now(timezone.utc)
     await db.commit()
     await db.refresh(note)

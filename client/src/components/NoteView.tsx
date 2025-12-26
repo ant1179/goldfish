@@ -166,11 +166,10 @@ export function NoteView() {
           {error && (
             <div className="mb-4 text-sm text-destructive">{error}</div>
           )}
-          <div className="prose max-w-none">
-            <div className="whitespace-pre-wrap text-base leading-relaxed">
-              {note.content}
-            </div>
-          </div>
+          <div 
+            className="prose prose-sm max-w-none text-base leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
         </CardContent>
       </Card>
     </>
