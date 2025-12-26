@@ -19,3 +19,22 @@ User stories are end to end features which should be implemented in the applicat
 - The user should be able to take notes and persist them in the database.
 - Note taking should be possible through a web interface.
 
+### User story 2: 
+
+#### Description
+
+- As a user, I want to be able to edit notes and persist them in the database.
+
+#### Acceptance Criteria
+
+- The user should be able to edit notes and persist them in the database.
+
+### User story 3: 
+
+#### Description
+
+- As a user, I want to be able to delete notes.
+
+#### Acceptance Criteria
+
+- The user should be able to delete notes.
