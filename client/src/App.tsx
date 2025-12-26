@@ -4,6 +4,7 @@ import { NoteList } from './components/NoteList'
 import { useState } from 'react'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import logo from '@/assets/images/goldfish.png'
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0)
@@ -18,11 +19,18 @@ function App() {
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <header className="mb-8">
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-4xl font-bold">Goldfish</h1>
-                <p className="text-muted-foreground mt-2">
-                  Application de prise de notes
-                </p>
+              <div className="flex items-center gap-4">
+                <img 
+                  src={logo} 
+                  alt="Goldfish Logo" 
+                  className="h-12 w-12 object-contain"
+                />
+                <div>
+                  <h1 className="text-4xl font-bold">Goldfish</h1>
+                  <p className="text-muted-foreground mt-2">
+                    Application de prise de notes
+                  </p>
+                </div>
               </div>
               <nav className="flex gap-2">
                 <Link
