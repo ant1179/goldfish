@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
+import { Collapsible } from '@/components/ui/collapsible'
 import { notesApi, type Note } from '@/services/api'
 import { FileText, Calendar, Edit } from 'lucide-react'
 
@@ -94,43 +95,105 @@ export function NoteList({ refreshKey }: NoteListProps) {
     return title.substring(0, maxLength).trim() + '...'
   }
 
+  // Grouper les notes par date de création
+  const groupNotesByDate = (notes: Note[]) => {
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const weekAgo = new Date(today)
+    weekAgo.setDate(weekAgo.getDate() - 7)
+    const twoWeeksAgo = new Date(today)
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+    const monthAgo = new Date(today)
+    monthAgo.setMonth(monthAgo.getMonth() - 1)
+
+    const groups: { [key: string]: Note[] } = {
+      'Aujourd\'hui': [],
+      'Cette semaine': [],
+      'La semaine dernière': [],
+      'Le mois dernier': [],
+      'Plus ancien': [],
+    }
+
+    // Trier les notes par date de création (plus récentes en premier)
+    const sortedNotes = [...notes].sort((a, b) => {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    })
+
+    sortedNotes.forEach((note) => {
+      const noteDate = new Date(note.created_at)
+      const noteDateOnly = new Date(noteDate.getFullYear(), noteDate.getMonth(), noteDate.getDate())
+
+      if (noteDateOnly.getTime() === today.getTime()) {
+        groups['Aujourd\'hui'].push(note)
+      } else if (noteDateOnly >= weekAgo) {
+        groups['Cette semaine'].push(note)
+      } else if (noteDateOnly >= twoWeeksAgo) {
+        groups['La semaine dernière'].push(note)
+      } else if (noteDateOnly >= monthAgo) {
+        groups['Le mois dernier'].push(note)
+      } else {
+        groups['Plus ancien'].push(note)
+      }
+    })
+
+    return groups
+  }
+
+  const groupedNotes = groupNotesByDate(notes)
+  const groupLabels = ['Aujourd\'hui', 'Cette semaine', 'La semaine dernière', 'Le mois dernier', 'Plus ancien']
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Mes notes</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {notes.map((note) => (
-          <Card key={note.id} className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3 mb-3">
-                <div className="flex-shrink-0 mt-1">
-                  <FileText className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm leading-tight mb-1">
-                    {truncateTitle(note.title)}
-                  </h3>
-                </div>
+      <div className="space-y-4">
+        {groupLabels.map((label) => {
+          const groupNotes = groupedNotes[label]
+          if (groupNotes.length === 0) return null
+
+          return (
+            <Collapsible
+              key={label}
+              title={`${label} (${groupNotes.length})`}
+              defaultOpen={label === 'Aujourd\'hui' || label === 'Cette semaine'}
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {groupNotes.map((note) => (
+                  <Card key={note.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="flex-shrink-0 mt-1">
+                          <FileText className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm leading-tight mb-1">
+                            {truncateTitle(note.title)}
+                          </h3>
+                        </div>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground line-clamp-3 mb-3">
+                        {truncateContent(note.content)}
+                      </p>
+                      
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>{formatDate(note.created_at)}</span>
+                        </div>
+                        {note.updated_at !== note.created_at && (
+                          <div className="flex items-center gap-1">
+                            <Edit className="h-3 w-3" />
+                            <span>{formatTime(note.updated_at)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-              
-              <p className="text-xs text-muted-foreground line-clamp-3 mb-3">
-                {truncateContent(note.content)}
-              </p>
-              
-              <div className="flex items-center gap-3 text-xs text-muted-foreground pt-2 border-t">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>{formatDate(note.created_at)}</span>
-                </div>
-                {note.updated_at !== note.created_at && (
-                  <div className="flex items-center gap-1">
-                    <Edit className="h-3 w-3" />
-                    <span>{formatTime(note.updated_at)}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+            </Collapsible>
+          )
+        })}
       </div>
     </div>
   )
